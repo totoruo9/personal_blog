@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 수익형 블로그 플랫폼 (Revenue Blog Platform)
 
-## Getting Started
+> **맛집 리뷰(개인 경험)**와 **트렌드 이슈(수익화)** 두 마리 토끼를 잡는 하이브리드 블로그 플랫폼.
+> **한국어/영어 다국어 지원**을 통해 글로벌 트래픽까지 고려하며, 텔레그램 봇을 통해 자동화된 워크플로우를 제공합니다.
 
-First, run the development server:
+## ✨ 프로젝트 목표 및 특징
+
+1.  **하이브리드 콘텐츠 전략**:
+    *   **맛집/일상 (Gourmet)**: 사진 전송 시 GPT-4o Vision이 분석하여 생생한 리뷰 작성 (한/영 동시 생성).
+    *   **트렌드/이슈 (Trends)**: Google Trends 기반 **주간 인기 키워드(정치 제외)** 선정 및 자동 글 생성.
+2.  **구조적 수익화**: 애드센스 최적화 및 체류시간 증대 설계.
+3.  **글로벌 대응 (I18n)**: 버튼 하나로 한국어/영어를 전환하여 볼 수 있는 즉각적인 다국어 UI 제공.
+4.  **자동화 (Automation)**: 텔레그램 봇을 통한 컨텐츠 초안 관리 및 발행.
+
+---
+
+## 🛠 기술 스택 (Tech Stack)
+
+*   **Framework**: Next.js 14 (App Router)
+*   **Styling**: Tailwind CSS (with Custom Design System)
+*   **Database**: Supabase (PostgreSQL)
+*   **AI Engine**: OpenAI API (GPT-4o Vision, DALL-E 3)
+*   **Deployment**: Vercel (Frontend), Railway (Bot)
+
+---
+
+## 📂 디렉토리 구조 (Architecture)
+
+```
+revenue-blog/
+├── src/
+│   ├── app/
+│   │   ├── (public)/       # 방문자 메인, 카테고리 뷰
+│   │   ├── (admin)/        # 관리자 대시보드
+│   │   └── api/            # 내부 API 핸들러
+│   ├── components/
+│   │   ├── design-system/  # 버튼, 카드 등 기본 UI 컴포넌트
+│   │   ├── layout/         # 헤더, 푸터
+│   │   └── sections/       # 페이지별 주요 섹션
+│   └── lib/                # 유틸리티 및 클라이언트 설정
+└── telegram-bot/           # (예정) Python 텔레그램 봇
+```
+
+---
+
+## 🚀 구현 진행 상황 (Implementation Status)
+
+### 1. 프로젝트 셋업
+- [x] 프로젝트 생성 및 기본 패키지 설치 (`revenue-blog`)
+- [x] **Design System**: Tailwind Config 설정 (Naver/Medium 스타일)
+- [x] **UI Components**: Button, Input, Card, Badge, Detailed Forms
+- [x] **Showcase**: `/design-guide` 페이지 구현 (컴포넌트 가이드)
+
+### 2. 웹 프론트엔드 (Web Frontend)
+- [x] **Main Page**: 랜딩 페이지 UI 구현 (Header, Hero, Horizontal Cards, Grid)
+- [ ] **I18n**: 한국어/영어 전환 토글 및 상태 관리 (Zustand)
+- [ ] **Routing**: `/category/food`, `/category/trends` 페이지
+- [ ] **Admin**: Tiptap 에디터 연동 (한/영 탭 분리 에디터)
+- [ ] **SEO**: 메타데이터 및 Sitemap 동적 생성
+
+### 3. 백엔드 및 자동화 (Backend & Automation)
+- [ ] **Database**: Supabase 테이블 설계 (`title_en`, `content_en` 컬럼 추가)
+- [ ] **Telegram Bot**:
+    - [ ] 맛집 리뷰 워크플로우 (이미지 분석 -> 다국어 초안)
+    - [ ] 트렌드 워크플로우 (키워드 추천 -> 자동 글쓰기)
+
+### 4. 배포 (Deployment)
+- [ ] Vercel 배포 (Frontend)
+- [ ] Railway 배포 (Bot)
+- [ ] 도메인 연결 및 애드센스 신청
+
+---
+
+## 🏁 시작하기 (Getting Started)
+
+로컬 개발 환경을 실행하려면:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+브라우저에서 `http://localhost:3000`을 열어 확인하세요.
+디자인 가이드는 `http://localhost:3000/design-guide`에서 확인할 수 있습니다.

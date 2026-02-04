@@ -17,13 +17,13 @@ export function Header() {
                 {/* Desktop Nav - Better spacing and hover states */}
                 <nav className="hidden md:flex items-center gap-8">
                     <Link href="/food" className="text-sm font-medium text-text-secondary hover:text-earth transition-colors font-body py-2 border-b-2 border-transparent hover:border-earth">
-                        Gourmet
+                        맛집 탐방
                     </Link>
                     <Link href="/trends" className="text-sm font-medium text-text-secondary hover:text-earth transition-colors font-body py-2 border-b-2 border-transparent hover:border-earth">
-                        Trends
+                        트렌드 이슈
                     </Link>
                     <Link href="/life" className="text-sm font-medium text-text-secondary hover:text-earth transition-colors font-body py-2 border-b-2 border-transparent hover:border-earth">
-                        Lifestyle
+                        라이프스타일
                     </Link>
                 </nav>
 
@@ -33,14 +33,6 @@ export function Header() {
                         <button className="px-3 py-1 text-xs font-bold rounded-full bg-white shadow-sm text-text-primary transition-all hover:bg-gray-50">KR</button>
                         <button className="px-3 py-1 text-xs font-bold rounded-full text-text-tertiary hover:text-text-primary transition-all hover:bg-white/50">EN</button>
                     </div>
-                    <div className="h-6 w-px bg-border-medium hidden sm:block" />
-                    <Button size="sm" variant="ghost" className="hidden sm:inline-flex text-text-secondary hover:text-earth hover:bg-stone-50">
-                        Login
-                    </Button>
-                    {/* FIX: Ensured visual contrast for Subscribe button */}
-                    <Button size="sm" variant="primary" className="bg-earth text-white hover:bg-earth-dark shadow-sm">
-                        Subscribe
-                    </Button>
                 </div>
             </div>
         </header>

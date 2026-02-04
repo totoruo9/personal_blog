@@ -21,19 +21,19 @@ export function Hero() {
                 </div>
 
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-medium text-white italic drop-shadow-xl max-w-5xl mx-auto leading-tight">
-                    "Finding Silence in the Chaos of Modern Life"
+                    "복잡한 도시 속, 고요함을 찾아서"
                 </h1>
 
                 <p className="text-lg md:text-xl text-white/90 font-body max-w-2xl mx-auto drop-shadow-md font-light leading-relaxed">
-                    How to reconnect with nature and yourself in an increasingly digital world.
+                    디지털 소음에서 벗어나 진정한 나를 마주하는 자연 속으로의 초대.
                 </p>
 
                 <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center">
                     <Button size="lg" className="bg-white text-earth hover:bg-stone-100 border-none shadow-lg font-bold min-w-[200px]">
-                        Read Article
+                        아티클 읽기
                     </Button>
                     <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 hover:text-white backdrop-blur-sm min-w-[200px]">
-                        Explore More
+                        더 둘러보기
                     </Button>
                 </div>
             </div>
