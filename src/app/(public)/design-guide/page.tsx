@@ -17,7 +17,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Modal } from "@/components/design-system/Modal";
-import { Feather, Info, CheckCircle, Layout, Type, Palette, MousePointer, Grid, Circle, AlertTriangle, XCircle, BoxSelect, Globe, Languages, Search, ChevronDown, Check, ToggleLeft, ToggleRight, Bookmark, Share2, Home, User, Bell } from "lucide-react";
+import { Feather, Info, CheckCircle, Layout, Type, Palette, MousePointer, Grid, Circle, AlertTriangle, XCircle, BoxSelect, Globe, Languages, Search, ChevronDown, Check, ToggleLeft, ToggleRight, Bookmark, Share2, Home, User, Bell, FileText, List } from "lucide-react";
+import { PostCard } from "@/components/blog/PostCard";
+import { FeaturedSeries } from "@/components/blog/FeaturedSeries";
 
 // --- Translations ---
 type Language = 'ko' | 'en';

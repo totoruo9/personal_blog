@@ -1,199 +1,179 @@
-import { Button } from "@/components/design-system/Button";
-import { Badge } from "@/components/design-system/Badge";
-import { Input } from "@/components/design-system/Input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/design-system/Card";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/Hero";
-import {
-  ArrowRight,
-  Clock,
-  MapPin,
-  TrendingUp,
-  ChevronRight,
-  Mail,
-  Search,
-  Star
-} from "lucide-react";
+import { HeroSlider } from "@/components/blog/HeroSlider";
+import { PostCard } from "@/components/blog/PostCard";
+import { FeaturedSeries } from "@/components/blog/FeaturedSeries";
+import { Sidebar } from "@/components/blog/Sidebar";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background-secondary font-sans text-text-primary">
+    <div className="min-h-screen bg-white font-sans text-text-primary">
       <Header />
 
-      <main>
-        {/* Hero Section */}
-        <Hero />
+      <main className="container mx-auto px-4 py-8 md:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
 
-        {/* Featured Content Area */}
-        <div className="container mx-auto px-4 md:px-6 py-16 space-y-24">
+          {/* =========================================
+              Left Column (Main Content) - w-[70%]
+             ========================================= */}
+          <div className="flex-1 min-w-0 space-y-16">
 
-          {/* Section 1: Categories & Search */}
-          <section className="flex flex-col md:flex-row gap-6 justify-between items-end border-b border-border-light pb-8">
-            <div className="space-y-4 w-full md:w-auto">
-              <h2 className="font-heading font-bold text-lg text-text-secondary uppercase tracking-widest block">토픽 둘러보기</h2>
-              <div className="flex flex-wrap gap-2">
-                <button className="px-5 py-2.5 rounded-full bg-stone-900 text-white font-bold text-sm shadow-sm transition-transform hover:-translate-y-0.5">
-                  전체 글
-                </button>
-                <button className="px-5 py-2.5 rounded-full bg-white border border-border-medium text-text-secondary font-bold text-sm hover:bg-stone-50 hover:border-earth hover:text-earth transition-all">
-                  맛집 가이드
-                </button>
-                <button className="px-5 py-2.5 rounded-full bg-white border border-border-medium text-text-secondary font-bold text-sm hover:bg-stone-50 hover:border-earth hover:text-earth transition-all">
-                  IT 트렌드
-                </button>
-                <button className="px-5 py-2.5 rounded-full bg-white border border-border-medium text-text-secondary font-bold text-sm hover:bg-stone-50 hover:border-earth hover:text-earth transition-all">
-                  라이프스타일
-                </button>
+            {/* 1. Hero Slider */}
+            <section>
+              <HeroSlider />
+            </section>
+
+            {/* 2. Ranking / Weekly Popular */}
+            <section>
+              <div className="flex items-end justify-between mb-4 border-b border-black/10 pb-4">
+                <h2 className="text-xl font-bold font-heading text-black">🔥 이번 주 인기글</h2>
               </div>
-            </div>
-
-            <div className="w-full md:w-72 relative">
-              <Input
-                placeholder="관심있는 글 검색..."
-                className="pl-10 rounded-full bg-white border-border-medium focus-visible:ring-earth"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary" />
-            </div>
-          </section>
-
-          {/* Section 2: Featured Article (Horizontal Card) */}
-          <section>
-            <div className="flex items-center gap-2 mb-8">
-              <Star className="w-5 h-5 text-earth" />
-              <h3 className="font-heading font-bold text-2xl">에디터의 추천 (Editor's Pick)</h3>
-            </div>
-
-            <Card className="overflow-hidden bg-white border-border-light hover:shadow-lg transition-all duration-300 md:grid md:grid-cols-12 group cursor-pointer border-none shadow-md">
-              <div className="md:col-span-7 relative min-h-[300px] md:min-h-[400px] overflow-hidden">
-                <div className="absolute inset-0 bg-stone-300 transition-transform duration-700 group-hover:scale-105">
-                  {/* Placeholder for real image */}
-                  <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1543362906-ac1b4526fb1d?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
-                </div>
-                <Badge className="absolute top-6 left-6 bg-white/90 text-earth backdrop-blur-sm shadow-sm border-none px-3 py-1 text-xs font-bold uppercase tracking-wider">
-                  Gourmet
-                </Badge>
+              <div className="flex flex-col">
+                {/* Ranked List Items */}
+                <PostCard
+                  variant="ranked-list"
+                  rank={1}
+                  title="두산에너빌리티 주가 전망: SMR과 AI 데이터센터 수혜주?"
+                  category="머니스토리"
+                  slug="stock-doosan"
+                  coverImage="https://images.unsplash.com/photo-1611974765270-ca1258634369?q=80&w=1000&auto=format&fit=crop"
+                />
+                <PostCard
+                  variant="ranked-list"
+                  rank={2}
+                  title="메뉴 3개에 만 원도 안 되는 칼국수집 (★★☆)"
+                  category="뚱방의 이로이로"
+                  slug="food-review"
+                  coverImage="https://images.unsplash.com/photo-1555126634-323283e090fa?q=80&w=1000&auto=format&fit=crop"
+                />
+                <PostCard
+                  variant="ranked-list"
+                  rank={3}
+                  title="치아를 뽑고 꼭 임플란트를 해야 할까? | 임플란트 vs 브릿지"
+                  category="아몬드 3알"
+                  slug="dental-care"
+                  coverImage="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=1000&auto=format&fit=crop"
+                />
+                <PostCard
+                  variant="ranked-list"
+                  rank={4}
+                  title="전국에서 가장 유명한 포브스 선정! 화덕 고등어구이 맛집"
+                  category="켈리의 맛집탐방"
+                  slug="fish-grill"
+                  coverImage="https://images.unsplash.com/photo-1519708227418-c8fd9a3a2720?q=80&w=1000&auto=format&fit=crop"
+                />
               </div>
-              <div className="md:col-span-5 p-8 md:p-12 flex flex-col justify-center bg-white relative">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3 text-xs font-bold text-text-tertiary uppercase tracking-widest">
-                    <Clock className="w-4 h-4" />
-                    <span>5분 길이</span>
-                    <span>•</span>
-                    <span>2024년 2월 4일</span>
-                  </div>
+            </section>
 
-                  <h2 className="font-heading font-bold text-3xl md:text-4xl text-text-primary leading-tight group-hover:text-earth transition-colors">
-                    서울의 숨겨진 오마카세 골목 탐방
-                  </h2>
+            {/* 3. Feed Section (Replaces Recent Posts) */}
+            <section className="space-y-8">
+              {/* Category Tabs */}
+              {/* Recent Posts Heading */}
+              <h2 className="text-xl font-bold font-heading text-black mb-4">최근 올라온 글</h2>
 
-                  <p className="text-text-secondary leading-relaxed text-lg">
-                    강남과 홍대의 화려한 거리 뒤편, 좁은 골목 속에 숨겨진 진정한 장인들의 스시 오마카세를 찾아 떠나는 미식 여행.
-                  </p>
-
-                  <div className="pt-4">
-                    <Button variant="link" className="px-0 text-earth font-bold text-base group-hover:translate-x-2 transition-transform">
-                      전체 읽기 <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </div>
+              {/* Pill Menu for Categories */}
+              <div className="flex justify-start mb-6">
+                <div className="inline-flex items-center p-1.5 rounded-full border border-border-light bg-white shadow-sm gap-1 overflow-x-auto hide-scrollbar">
+                  <button className="px-4 py-1.5 rounded-full bg-text-primary text-white text-sm font-bold whitespace-nowrap shadow-sm">
+                    전체
+                  </button>
+                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
+                    여행·맛집
+                  </button>
+                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
+                    리빙·스타일
+                  </button>
+                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
+                    가족·연애
+                  </button>
+                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
+                    직장·자기계발
+                  </button>
+                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
+                    시사·지식
+                  </button>
                 </div>
               </div>
-            </Card>
-          </section>
 
-          {/* Section 3: Latest Articles Grid */}
-          <section className="space-y-10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-earth" />
-                <h3 className="font-heading font-bold text-2xl">최신 스토리</h3>
+              {/* Top Grid (2 Columns) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <PostCard
+                  variant="feed-grid"
+                  title="부산 현지인은 광안리 안 갑니다, 참돔 유비끼의 성지 '창현수산'"
+                  tags={['부산최고횟집', '부산토박이횟집', '참돔유비끼', '창현수산']}
+                  coverImage="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1000&auto=format&fit=crop"
+                  date="1일 전"
+                  views={9}
+                  comments={10}
+                  category="부산 토박이 아저씨의 맛집 에세이"
+                  author="부산토박이"
+                  slug="busan-sashimi"
+                />
+                <PostCard
+                  variant="feed-grid"
+                  title="[강릉 출장 기록] 아내와 함께한 소박하지만 든든한 한 끼, '민영식당' 제육볶음 리뷰"
+                  tags={['강릉맛집', '제육볶음', '출장기록', '부부여행']}
+                  coverImage="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1000&auto=format&fit=crop"
+                  date="4일 전"
+                  views={3}
+                  comments={1}
+                  category="디노새"
+                  author="디노새"
+                  slug="gangneung-pork"
+                />
               </div>
-              <Button variant="ghost" className="text-text-secondary hover:text-earth">전체 보기 <ChevronRight className="w-4 h-4 ml-1" /></Button>
+
+              {/* List Feed */}
+              <div className="space-y-2">
+                {Array.from({ length: 10 }).map((_, index) => (
+                  <PostCard
+                    key={index}
+                    variant="feed-list"
+                    title={`[예시 포스트 ${index + 1}] 곤드레밥 맛집, 마루곳간 - 건강한 한 끼 식사`}
+                    excerpt="지난번에 산 TV가 오늘 오후 2시에 설치하러 올 거라는 연락을 받고 재활운동을 끝내고 나니 12시다. 집에 가서 점심 먹고 집안 음식냄새를 없애려면..."
+                    coverImage={`https://images.unsplash.com/photo-${[
+                      "1626804475297-411db1426433",
+                      "1507525428034-b723cf961d3e",
+                      "1459156212016-c812468e2115",
+                      "1559339352-11d035aa65de",
+                      "1565299624946-b28f40a0ae38",
+                      "1611974765270-ca1258634369",
+                      "1555126634-323283e090fa",
+                      "1606811841689-23dfddce3e95",
+                      "1519708227418-c8fd9a3a2720",
+                      "1626804475297-411db1426433"
+                    ][index % 10]}?q=80&w=1000&auto=format&fit=crop`}
+                    date={`${index + 1}일 전`}
+                    views={50 + index * 12}
+                    comments={8 + index}
+                    author="데레사의 꿈꾸는 세상"
+                    category={["여행·맛집", "리빙·스타일", "가족·연애"][index % 3]}
+                    slug={`post-${index}`}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination (Keeping existing style or mock) */}
+              <div className="mt-12 flex justify-center gap-2">
+                <button className="w-10 h-10 rounded-full bg-black text-white font-bold flex items-center justify-center">1</button>
+                <button className="w-10 h-10 rounded-full hover:bg-stone-200 text-text-secondary font-medium flex items-center justify-center transition-colors">2</button>
+                <button className="w-10 h-10 rounded-full hover:bg-stone-200 text-text-secondary font-medium flex items-center justify-center transition-colors">3</button>
+                <span className="w-10 h-10 flex items-center justify-center text-text-tertiary">...</span>
+                <button className="w-10 h-10 rounded-full hover:bg-stone-200 text-text-secondary font-medium flex items-center justify-center transition-colors">10</button>
+              </div>
+            </section>
+
+          </div>
+
+          {/* =========================================
+              Right Column (Sidebar) - w-[30%]
+             ========================================= */}
+          <div className="hidden lg:block w-80 shrink-0">
+            <div className="sticky top-24">
+              <Sidebar />
             </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Article 1 */}
-              <Card className="bg-white border-none shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group cursor-pointer overflow-hidden h-full flex flex-col">
-                <div className="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550525811-e5869dd03032?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-stone-900 text-white border-none">Tech</Badge>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="font-heading font-bold text-xl leading-snug group-hover:text-earth transition-colors">
-                      AI가 바꾸는 일상의 생산성 혁명
-                    </h4>
-                    <p className="text-text-secondary text-sm line-clamp-2">
-                      생성형 AI 모델들이 우리가 알지 못하는 사이에 아침 루틴과 업무 방식을 어떻게 조용히 변화시키고 있는지 알아봅니다.
-                    </p>
-                  </div>
-                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-border-light">
-                    <span className="text-xs text-text-tertiary font-bold">2024년 1월 28일</span>
-                    <span className="text-xs text-text-tertiary">3분 길이</span>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Article 2 */}
-              <Card className="bg-white border-none shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group cursor-pointer overflow-hidden h-full flex flex-col">
-                <div className="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1502086223501-1eec1da0346a?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-stone-900 text-white border-none">Life</Badge>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="font-heading font-bold text-xl leading-snug group-hover:text-earth transition-colors">
-                      미니멀리즘: 복잡한 마음을 비우는 기술
-                    </h4>
-                    <p className="text-text-secondary text-sm line-clamp-2">
-                      물리적인 공간을 정돈하는 것이 어떻게 정신적 명료함과 집중력을 되찾는 첫걸음이 되는지 탐구합니다.
-                    </p>
-                  </div>
-                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-border-light">
-                    <span className="text-xs text-text-tertiary font-bold">2024년 1월 25일</span>
-                    <span className="text-xs text-text-tertiary">6분 길이</span>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Article 3 */}
-              <Card className="bg-white border-none shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group cursor-pointer overflow-hidden h-full flex flex-col">
-                <div className="aspect-[4/3] bg-stone-100 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1974&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-stone-900 text-white border-none">Food</Badge>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="font-heading font-bold text-xl leading-snug group-hover:text-earth transition-colors">
-                      집밥의 재발견: 레스토랑보다 맛있는 한 끼
-                    </h4>
-                    <p className="text-text-secondary text-sm line-clamp-2">
-                      신선한 로컬 재료로 직접 준비하는 식사가 주는 소박하지만 확실한 행복을 다시금 깨닫습니다.
-                    </p>
-                  </div>
-                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-border-light">
-                    <span className="text-xs text-text-tertiary font-bold">2024년 1월 22일</span>
-                    <span className="text-xs text-text-tertiary">4분 길이</span>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          </section>
-
-
+          </div>
 
         </div>
       </main>
