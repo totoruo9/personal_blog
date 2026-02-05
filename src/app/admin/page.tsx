@@ -5,20 +5,35 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/design-system/Input";
 import { Button } from "@/components/design-system/Button";
 
+import { supabase } from "@/lib/supabase";
+
 export default function AdminLoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock Auth Check
-        if (email === "admin@example.com" && password === "password") {
-            // Ideally set a cookie or token here
-            alert("로그인 성공");
-            router.push("/admin/dashboard");
-        } else {
-            alert("이메일 또는 비밀번호가 올바르지 않습니다. (admin@example.com / password)");
+        setIsLoading(true);
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) {
+                alert("로그인 실패: " + error.message);
+            } else {
+                // Successful login
+                console.log("Login User:", data.user);
+                router.push("/admin/dashboard");
+            }
+        } catch (error: any) {
+            alert("오류 발생: " + error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -31,7 +46,7 @@ export default function AdminLoginPage() {
                         <label className="block text-sm font-bold text-text-secondary mb-2">이메일</label>
                         <Input
                             type="email"
-                            placeholder="admin@example.com"
+                            placeholder="your@email.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -47,11 +62,11 @@ export default function AdminLoginPage() {
                             required
                         />
                     </div>
-                    <Button type="submit" variant="primary" className="w-full">
-                        로그인
+                    <Button type="submit" variant="primary" className="w-full" disabled={isLoading}>
+                        {isLoading ? "로그인 중..." : "로그인"}
                     </Button>
                     <p className="text-xs text-center text-text-tertiary mt-4">
-                        데모 계정: admin@example.com / password
+                        관리자 계정으로 로그인해주세요.
                     </p>
                 </form>
             </div>

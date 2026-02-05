@@ -39,6 +39,8 @@ export const metadata: Metadata = {
   description: "Revenue Blog & Design System",
 };
 
+import { Providers } from "./providers"; // Add import
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +51,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nanumGothic.variable} ${songMyung.variable} ${nanumMyeongjo.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

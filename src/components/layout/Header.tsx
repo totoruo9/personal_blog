@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/design-system/Button";
-import { Badge } from "@/components/design-system/Badge";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export function Header() {
     return (
@@ -40,9 +39,8 @@ export function Header() {
                     </button>
 
                     {/* Language Switcher */}
-                    <div className="hidden sm:flex p-1 bg-stone-100 rounded-full border border-border-light ml-2">
-                        <button className="px-3 py-1 text-xs font-bold rounded-full bg-white shadow-sm text-black transition-all">KR</button>
-                        <button className="px-3 py-1 text-xs font-bold rounded-full text-text-tertiary hover:text-black transition-all">EN</button>
+                    <div className="ml-2">
+                        <LanguageSwitcher />
                     </div>
 
                     {/* Mobile Menu Trigger */}

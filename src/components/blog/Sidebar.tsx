@@ -1,7 +1,11 @@
 import { Badge } from "@/components/design-system/Badge";
 import { Hash } from "lucide-react";
+import { getPopularTags, getTotalStats } from "@/lib/posts";
 
-export function Sidebar() {
+export async function Sidebar() {
+    const popularTags = await getPopularTags();
+    const stats = await getTotalStats();
+
     return (
         <aside className="w-full lg:w-80 space-y-8">
 
@@ -10,12 +14,12 @@ export function Sidebar() {
                 <h3 className="font-bold text-text-primary text-sm uppercase tracking-wide mb-4">Blog Statistics</h3>
                 <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-3 bg-stone-50 rounded-md">
-                        <span className="block text-xs text-text-tertiary mb-1">Total Visitors</span>
-                        <span className="block font-mono font-bold text-lg">842,912</span>
+                        <span className="block text-xs text-text-tertiary mb-1">Total Views</span>
+                        <span className="block font-mono font-bold text-lg">{stats.visitors.toLocaleString()}</span>
                     </div>
                     <div className="text-center p-3 bg-stone-50 rounded-md">
                         <span className="block text-xs text-text-tertiary mb-1">Today</span>
-                        <span className="block font-mono font-bold text-lg text-blue-600">1,248</span>
+                        <span className="block font-mono font-bold text-lg text-blue-600">{stats.today.toLocaleString()}</span>
                     </div>
                 </div>
             </div>
@@ -36,11 +40,15 @@ export function Sidebar() {
                     <h3 className="font-bold text-text-primary text-sm uppercase tracking-wide">인기 태그</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                    {['맛집', '서울여행', '재테크', '미니멀리즘', '아이폰', 'AI', '자기계발', '홈카페'].map(tag => (
-                        <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-olive-dark transition-colors px-3 py-1">
-                            #{tag}
-                        </Badge>
-                    ))}
+                    {popularTags.length > 0 ? (
+                        popularTags.map(tag => (
+                            <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-olive-dark transition-colors px-3 py-1">
+                                #{tag}
+                            </Badge>
+                        ))
+                    ) : (
+                        <p className="text-xs text-stone-400">태그가 없습니다.</p>
+                    )}
                 </div>
             </div>
 

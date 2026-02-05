@@ -1,11 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { LayoutDashboard, PenTool, LogOut, Settings } from "lucide-react";
 
-export default function DashboardLayout({
+export default function AdminDashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.replace("/admin"); // Redirect to login
+            }
+            setIsLoading(false);
+        };
+
+        checkAuth();
+    }, [router]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-stone-50">
+                <div className="text-stone-500">Checking authorization...</div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col md:flex-row">
             {/* Admin Sidebar */}

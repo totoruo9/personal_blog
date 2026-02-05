@@ -1,39 +1,14 @@
-import { notFound } from "next/navigation";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { Sidebar } from "@/components/blog/Sidebar";
-import { PostCard } from "@/components/blog/PostCard";
-import { MOCK_POSTS, getMockPosts } from "@/lib/mock-data";
+import { getPostsByCategory } from "@/lib/posts";
 
-interface PageProps {
-    params: Promise<{
-        slug: string;
-    }>;
-}
-
-// Map slug to display name
-const CATEGORY_MAP: Record<string, string> = {
-    "food": "맛집 탐방",
-    "trends": "트렌드 이슈",
-    "life": "라이프스타일",
-    "money": "머니스토리",
-    "travel": "여행·맛집",
-    // Add other mappings or logic to handle raw slugs
-};
+// ... (Category Map)
 
 export default async function CategoryPage({ params }: PageProps) {
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
+    // If slug is unknown map key, treat as raw category name
     const categoryName = CATEGORY_MAP[decodedSlug] || decodedSlug;
 
-    // Mock filtering: Get posts that match the category or simply return a list for demo
-    // In a real app, this would query the DB
-    const posts = getMockPosts(12).map((p, i) => ({
-        ...p,
-        category: categoryName, // Force category for demo consistency
-        id: `cat-${i}`,
-        slug: `${p.slug}-${i}` // unique slug
-    }));
+    const posts = await getPostsByCategory(categoryName);
 
     return (
         <div className="min-h-screen bg-white font-sans text-text-primary">
@@ -58,13 +33,28 @@ export default async function CategoryPage({ params }: PageProps) {
 
                         {/* Post List */}
                         <div className="space-y-4">
-                            {posts.map((post) => (
-                                <PostCard
-                                    key={post.id}
-                                    variant="feed-list"
-                                    {...post}
-                                />
-                            ))}
+                            {posts.length === 0 ? (
+                                <div className="py-20 text-center text-stone-500">
+                                    이 카테고리에 아직 글이 없습니다.
+                                </div>
+                            ) : (
+                                posts.map((post) => (
+                                    <PostCard
+                                        key={post.id}
+                                        variant="feed-list"
+                                        title={post.title}
+                                        titleEn={post.title_en}
+                                        excerpt={post.content.replace(/<[^>]*>/g, '').substring(0, 100) + "..."}
+                                        thumbnailUrl={post.thumbnail_url}
+                                        date={new Date(post.created_at).toLocaleDateString()}
+                                        views={post.views || 0}
+                                        comments={0}
+                                        category={post.category}
+                                        slug={post.slug}
+                                        author={post.author || "Admin"}
+                                    />
+                                ))
+                            )}
                         </div>
 
                         {/* Pagination Mock */}
