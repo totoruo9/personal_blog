@@ -11,7 +11,8 @@ interface PageProps {
 import { Sidebar } from "@/components/blog/Sidebar";
 
 export default async function BlogPostPage({ params }: PageProps) {
-    const { slug } = await params;
+    const { slug: rawSlug } = await params;
+    const slug = decodeURIComponent(rawSlug);
 
     const post = await getPostBySlug(slug);
 

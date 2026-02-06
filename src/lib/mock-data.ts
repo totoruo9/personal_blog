@@ -22,11 +22,6 @@ export const CATEGORIES = [
     "직장·자기계발",
     "시사·지식",
     "머니스토리", // From Ranked
-    "디노새",     // From specific user category
-    "뚱방의 이로이로", // From Ranked
-    "아몬드 3알", // From Ranked
-    "켈리의 맛집탐방", // From Ranked
-    "부산 토박이 아저씨의 맛집 에세이",
 ];
 
 export const MOCK_POSTS: BlogPost[] = [

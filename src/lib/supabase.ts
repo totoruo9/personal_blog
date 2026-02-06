@@ -19,6 +19,7 @@ export interface Post {
   tags?: string[];
   author?: string; // e.g. 'admin'
   views?: number;
+  comments?: number;
   slug: string;
 }
 

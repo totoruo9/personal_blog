@@ -4,6 +4,7 @@ import { HeroSlider } from "@/components/blog/HeroSlider";
 import { PostCard } from "@/components/blog/PostCard";
 import { Sidebar } from "@/components/blog/Sidebar";
 import { getPosts, getHybridPosts } from "@/lib/posts";
+import { FeedSection } from "@/components/blog/FeedSection"; // Import added
 
 // Revalidate every minute
 export const revalidate = 60;
@@ -56,58 +57,8 @@ export default async function Home() {
               </div>
             </section>
 
-            {/* 3. Feed Section (Real Data) */}
-            <section className="space-y-8">
-              {/* Recent Posts Heading */}
-              <h2 className="text-xl font-bold font-heading text-black mb-4">최근 올라온 글</h2>
-
-              {/* Pill Menu for Categories */}
-              <div className="flex justify-start mb-6">
-                <div className="inline-flex items-center p-1.5 rounded-full border border-border-light bg-white shadow-sm gap-1 overflow-x-auto hide-scrollbar">
-                  <button className="px-4 py-1.5 rounded-full bg-text-primary text-white text-sm font-bold whitespace-nowrap shadow-sm">
-                    전체
-                  </button>
-                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
-                    여행·맛집
-                  </button>
-                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
-                    리빙·스타일
-                  </button>
-                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
-                    가족·연애
-                  </button>
-                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
-                    직장·자기계발
-                  </button>
-                  <button className="px-4 py-1.5 rounded-full text-text-secondary hover:bg-stone-100 hover:text-text-primary text-sm font-medium whitespace-nowrap transition-colors">
-                    시사·지식
-                  </button>
-                </div>
-              </div>
-
-              {/* List Feed */}
-              <div className="space-y-2">
-                {posts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    variant="feed-list"
-                    title={post.title}
-                    titleEn={post.title_en}
-                    excerpt={post.content.replace(/<[^>]*>/g, '').substring(0, 100) + "..."}
-                    excerptEn={post.content_en?.replace(/<[^>]*>/g, '').substring(0, 100) + "..."}
-                    thumbnailUrl={post.thumbnail_url}
-                    date={new Date(post.created_at).toLocaleDateString()}
-                    views={post.views || 0}
-                    comments={0}
-                    category={post.category}
-                    slug={post.slug}
-                    author={post.author || "Admin"}
-                  />
-                ))}
-              </div>
-
-            </section>
-
+            {/* 3. Feed Section (Real Data with Client Filtering) */}
+            <FeedSection initialPosts={posts} />
 
           </div>
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/design-system/Badge";
 import { Hash } from "lucide-react";
 import { getPopularTags, getTotalStats } from "@/lib/posts";
@@ -42,9 +43,11 @@ export async function Sidebar() {
                 <div className="flex flex-wrap gap-2">
                     {popularTags.length > 0 ? (
                         popularTags.map(tag => (
-                            <Badge key={tag} variant="secondary" className="cursor-pointer hover:bg-olive-dark transition-colors px-3 py-1">
-                                #{tag}
-                            </Badge>
+                            <Link key={tag} href={`/search?q=${encodeURIComponent(tag)}`}>
+                                <Badge variant="secondary" className="cursor-pointer hover:bg-olive-dark transition-colors px-3 py-1">
+                                    #{tag}
+                                </Badge>
+                            </Link>
                         ))
                     ) : (
                         <p className="text-xs text-stone-400">태그가 없습니다.</p>

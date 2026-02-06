@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { CATEGORIES } from "@/lib/mock-data";
 
 export function Header() {
     return (
@@ -20,9 +21,31 @@ export function Header() {
                         <Link href="/" className="text-sm font-bold text-text-primary hover:text-blue-600 transition-colors">
                             홈
                         </Link>
-                        <Link href="/category" className="text-sm font-medium text-text-secondary hover:text-blue-600 transition-colors">
-                            카테고리
-                        </Link>
+
+                        {/* Category Dropdown */}
+                        <div className="relative group">
+                            <Link
+                                href="/"
+                                className="flex items-center h-16 text-sm font-medium text-text-secondary group-hover:text-blue-600 transition-colors"
+                            >
+                                카테고리
+                            </Link>
+
+                            {/* Dropdown Menu */}
+                            <div className="absolute top-full left-0 w-48 py-2 bg-white rounded-lg shadow-xl border border-border-light opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                                <div className="flex flex-col">
+                                    {CATEGORIES.map((category) => (
+                                        <Link
+                                            key={category}
+                                            href={category === '전체' ? '/category/all' : `/category/${encodeURIComponent(category)}`}
+                                            className="px-4 py-2.5 text-sm text-text-secondary hover:text-text-primary hover:bg-stone-50 transition-colors text-left"
+                                        >
+                                            {category}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </nav>
                 </div>
 

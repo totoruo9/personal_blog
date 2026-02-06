@@ -2,13 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Badge } from "@/components/design-system/Badge";
 import { Eye, MessageCircle, Calendar, ArrowLeft } from "lucide-react";
 import { CommentSection } from "@/components/blog/CommentSection";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
-import ReactMarkdown from "react-markdown";
+import { Button } from "@/components/design-system/Button";
+
+const DynamicViewer = dynamic(() => import('@/components/blog/ToastViewer'), {
+    ssr: false,
+    loading: () => <div className="p-4 text-stone-400">Loading content...</div>
+});
 
 interface PostContentProps {
     post: any; // Using any for flexibility with Supabase types + extra fields
@@ -30,12 +36,14 @@ export function PostContent({ post, sidebar }: PostContentProps) {
 
                     {/* Left Column (Article Content) */}
                     <article className="flex-1 min-w-0">
-                        {/* ... */}
-                        {/* Back Link */}
-                        <Link href="/" className="inline-flex items-center text-text-tertiary hover:text-text-primary mb-6 transition-colors">
-                            <ArrowLeft className="w-4 h-4 mr-1" />
-                            {language === 'en' ? "Back to Home" : "홈으로 돌아가기"}
-                        </Link>
+
+                        {/* Top Controls */}
+                        <div className="flex items-center justify-between mb-6">
+                            <Link href="/" className="inline-flex items-center text-text-tertiary hover:text-text-primary transition-colors">
+                                <ArrowLeft className="w-4 h-4 mr-1" />
+                                {language === 'en' ? "Back to Home" : "홈으로 돌아가기"}
+                            </Link>
+                        </div>
 
                         {/* Post Header */}
                         <header className="mb-8">
@@ -83,10 +91,9 @@ export function PostContent({ post, sidebar }: PostContentProps) {
                             </div>
                         )}
 
-                        {/* Post Content (Prose) */}
-                        <div className="prose prose-lg max-w-none prose-stone prose-headings:font-bold prose-headings:font-heading prose-a:text-blue-600 hover:prose-a:text-blue-700">
-                            {/* Use ReactMarkdown for safe rendering */}
-                            <ReactMarkdown>{displayContent}</ReactMarkdown>
+                        {/* Content Area */}
+                        <div className="prose prose-lg max-w-none prose-stone">
+                            <DynamicViewer content={displayContent || ''} />
                         </div>
 
                         {/* Tags */}
@@ -103,7 +110,7 @@ export function PostContent({ post, sidebar }: PostContentProps) {
                         )}
 
                         {/* Comments Section */}
-                        <CommentSection initialCount={post.comments} />
+                        <CommentSection initialCount={post.comments} postId={post.id} />
 
                     </article>
 

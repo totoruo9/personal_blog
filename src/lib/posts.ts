@@ -5,7 +5,7 @@ import { MOCK_POSTS } from './mock-data';
 export async function getPosts(limit = 20, sortBy: 'created_at' | 'views' = 'created_at'): Promise<Post[]> {
     const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, comments(count)')
         .order(sortBy, { ascending: false })
         .limit(limit);
 
@@ -14,25 +14,32 @@ export async function getPosts(limit = 20, sortBy: 'created_at' | 'views' = 'cre
         return [];
     }
 
-    // Map Supabase data to Post type if needed (or ensure schema matches)
-    return (data as Post[]) || [];
+    return (data?.map(post => ({
+        ...post,
+        comments: post.comments?.[0]?.count || 0
+    })) as Post[]) || [];
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
     const { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select('*, comments(count)')
         .eq('slug', slug)
         .single();
 
     if (error) {
-        if (error.code !== 'PGRST116') { // Ignore 'JSON object requested, multiple (or no) rows returned' for fallback check
+        if (error.code !== 'PGRST116') {
             console.error("Error fetching post by slug:", error);
         }
         return null;
     }
 
-    return data as Post;
+    const post = {
+        ...data,
+        comments: data.comments?.[0]?.count || 0
+    };
+
+    return post as Post;
 }
 
 // Helper to get unique tags from recent posts (since Supabase doesn't have easy distinct array column fetch yet)
@@ -59,17 +66,38 @@ export async function getPopularTags(limit = 10): Promise<string[]> {
         .map(([tag]) => tag);
 }
 
+export async function incrementDailyStats() {
+    const { error } = await supabase.rpc('increment_daily_stats');
+    if (error) {
+        console.error("Error incrementing stats:", error);
+    }
+}
+
 export async function getTotalStats() {
-    // For 'Total Visitors', we don't have analytics yet. Use total views sum as proxy or just count.
-    // Sum views
-    const { data, error } = await supabase
-        .from('posts')
-        .select('views');
+    // 1. Get Today's Stats
+    const todayStr = new Date().toISOString().split('T')[0];
+    const { data: todayData, error: todayError } = await supabase
+        .from('daily_stats')
+        .select('visitors, page_views')
+        .eq('date', todayStr)
+        .single();
 
-    if (error || !data) return { visitors: 842912, today: 1248 }; // Fallback to mock if error
+    // 2. Get Total All Time Stats
+    // We can sum up the 'page_views' column from daily_stats
+    const { data: totalData, error: totalError } = await supabase
+        .from('daily_stats')
+        .select('page_views');
 
-    const totalViews = data.reduce((acc, curr) => acc + (curr.views || 0), 0);
-    return { visitors: totalViews, today: 1248 }; // 'today' still mock without time-series data
+    if (todayError && todayError.code !== 'PGRST116') {
+        console.error("Error fetching today stats:", todayError);
+    }
+
+    // Calculate total
+    const totalViews = totalData?.reduce((acc, curr) => acc + (curr.page_views || 0), 0) || 0;
+    const todayViews = todayData?.page_views || 0; // Usage page_views for "Today" count as well for consistency
+
+    // Fallback? If zero, maybe return 0.
+    return { visitors: totalViews, today: todayViews };
 }
 
 export async function createPost(post: Omit<Post, 'id' | 'created_at' | 'views'>) {
@@ -97,23 +125,36 @@ export async function getHybridPosts(): Promise<Post[]> {
     return realPosts;
 }
 
-export async function getPostsByCategory(category: string, limit = 20): Promise<Post[]> {
+export async function getPostsByCategory(category: string, page = 1, limit = 30): Promise<{ data: Post[], count: number }> {
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
     // Handle "All" case
     if (category === '전체' || category === 'all') {
-        return getPosts(limit);
+        const { data, count, error } = await supabase
+            .from('posts')
+            .select('*', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(from, to);
+
+        if (error) {
+            console.error("Error fetching all posts:", error);
+            return { data: [], count: 0 };
+        }
+        return { data: (data as Post[]) || [], count: count || 0 };
     }
 
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
         .from('posts')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('category', category)
         .order('created_at', { ascending: false })
-        .limit(limit);
+        .range(from, to);
 
     if (error) {
         console.error(`Error fetching posts for category ${category}:`, error);
-        return [];
+        return { data: [], count: 0 };
     }
 
-    return (data as Post[]) || [];
+    return { data: (data as Post[]) || [], count: count || 0 };
 }

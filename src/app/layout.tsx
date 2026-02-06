@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from "./providers"; // Add import
+import { VisitorTracker } from "@/components/common/VisitorTracker";
 
 export default function RootLayout({
   children,
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${nanumGothic.variable} ${songMyung.variable} ${nanumMyeongjo.variable} antialiased`}
       >
+        <VisitorTracker />
         <Providers>
           {children}
         </Providers>

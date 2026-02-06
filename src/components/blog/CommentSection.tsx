@@ -1,66 +1,109 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { MessageCircle, Lock, MoreVertical } from "lucide-react"; // Import Icons
+import { MessageCircle, Lock, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/design-system/Button";
 import { Input } from "@/components/design-system/Input";
+import { supabase } from "@/lib/supabase";
 
 interface Comment {
     id: string;
     author: string;
     avatar?: string;
-    date: string;
+    created_at: string;
     content: string;
-    isSecret?: boolean;
+    is_secret?: boolean;
+    password?: string; // Only used for client-side check if needed or insert
 }
 
-// Initial Mock Comments matching the screenshot style or generic ones
-const INITIAL_COMMENTS: Comment[] = [
-    {
-        id: "c1",
-        author: "뭉진이",
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Mungjin",
-        date: "2026. 2. 3. 15:05",
-        content: "맛있겠네요. 투썸...ㅎㅎ 먹어보고 싶네요.👍",
-    },
-    {
-        id: "c2",
-        author: "sinhanrack(신한앵글랙)",
-        avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=Sinhan",
-        date: "15분 전",
-        content: "정성 들여 작성하신 포스팅 잘 보고 갑니다. 행복한 하루 보내세요^^",
-    }
-];
-
-export function CommentSection({ initialCount = 0 }: { initialCount?: number }) {
-    const [comments, setComments] = useState<Comment[]>(INITIAL_COMMENTS);
+export function CommentSection({ initialCount = 0, postId }: { initialCount?: number; postId: string }) {
+    const [comments, setComments] = useState<Comment[]>([]);
     const [authorName, setAuthorName] = useState("");
     const [password, setPassword] = useState("");
     const [content, setContent] = useState("");
     const [isSecret, setIsSecret] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        if (postId) {
+            fetchComments();
+        }
+    }, [postId]);
+
+    const fetchComments = async () => {
+        const { data, error } = await supabase
+            .from('comments')
+            .select('*')
+            .eq('post_id', postId)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error("Error fetching comments:", error);
+        } else {
+            setComments(data || []);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!authorName || !password || !content) {
             alert("이름, 비밀번호, 내용을 모두 입력해주세요.");
             return;
         }
 
-        const newComment: Comment = {
-            id: Date.now().toString(),
+        setIsLoading(true);
+
+        const newComment = {
+            post_id: postId,
             author: authorName,
-            avatar: `https://api.dicebear.com/7.x/adventurer/svg?seed=${authorName}`,
-            date: "방금 전",
+            password: password,
             content: content,
-            isSecret: isSecret
+            is_secret: isSecret,
+            created_at: new Date().toISOString() // Optimistic update usually, but DB sets default
         };
 
-        setComments([...comments, newComment]);
-        setContent("");
-        setAuthorName("");
-        setPassword("");
-        setIsSecret(false);
+        const { data, error } = await supabase
+            .from('comments')
+            .insert([newComment])
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Error adding comment:", error);
+            alert("댓글 등록에 실패했습니다.");
+        } else {
+            setComments([...comments, data]);
+            setContent("");
+            setAuthorName("");
+            setPassword("");
+            setIsSecret(false);
+        }
+        setIsLoading(false);
+    };
+
+    const handleDelete = async (commentId: string) => {
+        const inputPwd = prompt("댓글 삭제를 위해 비밀번호를 입력해주세요.");
+        if (!inputPwd) return;
+
+        // Verify password (client-side check for this simple demo, or call API)
+        // Since we don't have a verify API yet, we will just try to delete matching id AND password
+        // But RLS policies might block arbitrary deletes.
+        // For this demo, let's fetch the comment to check password or assume checking logic.
+        // SECURITY NOTE: In a real app, never expose password in SELECT. This is a simple demo.
+
+        const { data: comment } = await supabase.from('comments').select('password').eq('id', commentId).single();
+        if (comment && comment.password === inputPwd) {
+            const { error } = await supabase.from('comments').delete().eq('id', commentId);
+            if (!error) {
+                setComments(comments.filter(c => c.id !== commentId));
+                alert("삭제되었습니다.");
+            } else {
+                alert("삭제 중 오류가 발생했습니다.");
+            }
+        } else {
+            alert("비밀번호가 일치하지 않습니다.");
+        }
     };
 
     return (
@@ -82,7 +125,7 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                         <div key={comment.id} className="flex gap-4 group">
                             <div className="shrink-0 w-10 h-10 rounded-full overflow-hidden border border-border-light bg-stone-100">
                                 <Image
-                                    src={comment.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${comment.author}`}
+                                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${comment.author}`}
                                     alt={comment.author}
                                     width={40}
                                     height={40}
@@ -91,16 +134,19 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between mb-1">
                                     <span className="font-bold text-text-primary text-sm">{comment.author}</span>
-                                    <button className="text-stone-400 hover:text-stone-600">
-                                        <MoreVertical className="w-4 h-4" />
+                                    <button
+                                        onClick={() => handleDelete(comment.id)}
+                                        className="text-stone-300 hover:text-red-500 transition-colors"
+                                        title="삭제"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
                                 <div className="text-text-secondary text-sm leading-relaxed whitespace-pre-wrap mb-2">
-                                    {comment.content}
+                                    {comment.is_secret ? "🔒 비밀 댓글입니다." : comment.content}
                                 </div>
                                 <div className="flex items-center gap-3 text-xs text-text-tertiary">
-                                    <span>{comment.date}</span>
-                                    <button className="hover:text-text-primary transition-colors">답글</button>
+                                    <span>{new Date(comment.created_at).toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
@@ -119,7 +165,7 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                         </svg>
                     </div>
 
-                    <div className="flex-1 space-y-4">
+                    <form onSubmit={handleSubmit} className="flex-1 space-y-4">
                         {/* Inputs Row */}
                         <div className="flex gap-4">
                             <Input
@@ -127,6 +173,7 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                                 value={authorName}
                                 onChange={(e) => setAuthorName(e.target.value)}
                                 className="bg-white"
+                                required
                             />
                             <Input
                                 type="password"
@@ -134,6 +181,7 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="bg-white"
+                                required
                             />
                         </div>
 
@@ -141,10 +189,10 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                         <div className="relative">
                             <textarea
                                 className="w-full min-h-[100px] p-4 rounded-lg border border-border-medium bg-white text-sm resize-none focus:outline-none focus:ring-2 focus:ring-earth disabled:opacity-50"
-                                placeholder="로그인 댓글만 허용한 블로그입니다... (여기는 데모이므로 자유롭게 작성 가능)"
-                                // Changed placeholder for actual usage
+                                placeholder="소중한 댓글을 남겨주세요..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
+                                required
                             />
                         </div>
 
@@ -161,15 +209,15 @@ export function CommentSection({ initialCount = 0 }: { initialCount?: number }) 
                                 </button>
                             </div>
                             <Button
-                                onClick={handleSubmit}
+                                type="submit"
                                 variant="primary"
                                 className="bg-stone-800 text-white hover:bg-black px-6 rounded-none h-10 font-bold"
-                            // Styled to match screenshot (dark button)
+                                disabled={isLoading}
                             >
-                                등록
+                                {isLoading ? "등록 중..." : "등록"}
                             </Button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

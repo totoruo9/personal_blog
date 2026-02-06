@@ -7,6 +7,12 @@ import { ArrowLeft, Save, Image as ImageIcon, Wand2, Loader2 } from "lucide-reac
 import { Input } from "@/components/design-system/Input";
 import { Button } from "@/components/design-system/Button";
 import { CATEGORIES } from "@/lib/mock-data";
+import dynamic from 'next/dynamic';
+
+const DynamicEditor = dynamic(() => import('@/components/admin/ToastEditor'), {
+    ssr: false,
+    loading: () => <div className="h-[600px] flex items-center justify-center bg-stone-50 text-stone-400">에디터 로딩 중...</div>
+});
 
 function AdminWriteForm() {
     const router = useRouter();
@@ -195,7 +201,7 @@ function AdminWriteForm() {
     return (
         <div className="max-w-4xl mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-8 sticky top-0 z-50 bg-stone-50/95 backdrop-blur-sm py-4 -mx-4 px-4 border-b border-stone-200/50">
                 <div className="flex items-center gap-4">
                     <Link href="/admin/dashboard" className="p-2 -ml-2 text-stone-400 hover:text-stone-900 transition-colors">
                         <ArrowLeft className="w-5 h-5" />
@@ -299,10 +305,13 @@ function AdminWriteForm() {
                         {activeTab === 'ko' ? "본문 내용 (Korean)" : "Content (English)"}
                     </label>
 
-                    {/* Thumbnail Image (Shared) */}
+                    {/* Thumbnail Image (Shared) - Still useful for cover image, but not for content body images anymore. 
+                        Actually user might still want to set a COVER image separate from body content.
+                        Let's keep this as "Cover Image" but clarify it is for the card/header. 
+                    */}
                     {activeTab === 'ko' && (
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="relative w-32 h-20 bg-stone-100 rounded-lg overflow-hidden border border-stone-200 flex items-center justify-center">
+                        <div className="flex items-center gap-4 mb-6 p-4 bg-stone-50 rounded-lg border border-stone-200">
+                            <div className="relative w-32 h-20 bg-white rounded-lg overflow-hidden border border-stone-200 flex items-center justify-center">
                                 {thumbnailUrl ? (
                                     <img
                                         src={thumbnailUrl}
@@ -314,6 +323,7 @@ function AdminWriteForm() {
                                 )}
                             </div>
                             <div className="flex-1">
+                                <label className="block text-sm font-bold text-stone-700 mb-1">썸네일 (대표 이미지)</label>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -331,11 +341,7 @@ function AdminWriteForm() {
                                             const data = await res.json();
                                             if (data.url) {
                                                 setThumbnailUrl(data.url);
-                                                const appendText = `\n\n![${file.name}](${data.url})`;
-                                                if (activeTab === 'ko') setContent(prev => prev + appendText);
-                                                else setContentEn(prev => prev + appendText);
-
-                                                alert("이미지가 업로드되었습니다.");
+                                                alert("썸네일이 등록되었습니다.");
                                             } else {
                                                 throw new Error(data.error);
                                             }
@@ -343,33 +349,24 @@ function AdminWriteForm() {
                                             alert("이미지 업로드 실패: " + err.message);
                                         }
                                     }}
-                                    className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-stone-50 file:text-stone-700 hover:file:bg-stone-100"
+                                    className="block w-full text-sm text-stone-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-white file:text-purple-700 hover:file:bg-purple-50 transition-colors"
                                 />
                                 <p className="text-xs text-stone-400 mt-1">
-                                    이미지는 본문 하단에 추가됩니다.
+                                    목록과 상단 노출용 이미지입니다. 본문 이미지는 에디터 내 기능을 이용하세요.
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    <div className="border border-stone-200 rounded-lg overflow-hidden min-h-[400px] flex flex-col">
-                        {/* Toolbar Mock */}
-                        <div className="bg-stone-50 border-b border-stone-200 p-2 flex gap-2">
-                            <button className="p-1.5 rounded hover:bg-stone-200 text-stone-600 font-bold">B</button>
-                            <button className="p-1.5 rounded hover:bg-stone-200 text-stone-600 italic">I</button>
-                            <button className="p-1.5 rounded hover:bg-stone-200 text-stone-600 underline">U</button>
-                            <div className="w-px h-6 bg-stone-300 mx-1 self-center" />
-                            <button className="p-1.5 rounded hover:bg-stone-200 text-stone-600 flex items-center gap-1">
-                                <ImageIcon className="w-4 h-4" />
-                                <span className="text-xs">이미지</span>
-                            </button>
-                        </div>
-                        {/* Textarea */}
-                        <textarea
-                            className="flex-1 w-full p-4 resize-none outline-none text-stone-800 leading-relaxed"
-                            placeholder={activeTab === 'ko' ? "내용을 입력하세요..." : "Write your content here..."}
-                            value={activeTab === 'ko' ? content : contentEn}
-                            onChange={(e) => activeTab === 'ko' ? setContent(e.target.value) : setContentEn(e.target.value)}
+                    <div className="border border-stone-200 rounded-lg overflow-hidden min-h-[500px] flex flex-col bg-white">
+                        <DynamicEditor
+                            key={activeTab}
+                            initialValue={activeTab === 'ko' ? content : contentEn}
+                            onChange={(val) => {
+                                if (activeTab === 'ko') setContent(val);
+                                else setContentEn(val);
+                            }}
+                            height="600px"
                         />
                     </div>
                 </div>

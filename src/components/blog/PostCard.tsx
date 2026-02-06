@@ -14,6 +14,7 @@ interface PostCardProps {
     title: string;
     titleEn?: string;
     excerpt?: string;
+    excerptEn?: string;
     thumbnailUrl?: string | null;
     date?: string;
     views?: number;
