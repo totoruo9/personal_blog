@@ -1,49 +1,56 @@
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-import { NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: Request) {
     try {
-        const { prompt, type } = await request.json();
+        const { articles, keyword } = await request.json();
 
-        if (!prompt) {
-            return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+        if (!articles || !Array.isArray(articles) || articles.length === 0) {
+            return NextResponse.json({ error: "No articles provided" }, { status: 400 });
         }
 
-        const promptText = `
-    You are an expert blog writer.
-    Write a high-quality, engaging blog post about "${prompt}" in TWO languages: Korean and English.
-    
-    The content should be optimized for SEO, using appropriate keywords naturally.
-    Use Markdown formatting (headers, lists, bold text) for the content.
-    
-    Refuse to write if the topic is inappropriate.
+        // Prepare context for AI
+        const context = articles.map((a, i) =>
+            `\n---\nArticle ${i + 1}:\nTitle: ${a.title}\nSource: ${a.source}\nLink: ${a.link}\nContent:\n${a.content}\n---\n`
+        ).join('');
 
-    Return the result strictly as a JSON object with the following structure:
-    {
-      "title_ko": "Korean Title",
-      "content_ko": "Korean Content (Markdown)",
-      "title_en": "English Title",
-      "content_en": "English Content (Markdown)"
-    }
-    `;
+        const systemPrompt = `
+You are an expert tech and lifestyle investment blogger for "The Managegram". 
+Your tone is professional yet accessible, insightful, and data-driven.
+You are writing a blog post about "${keyword}" based on the provided news articles.
 
-        const completion = await openai.chat.completions.create({
+Requirements:
+1.  **Title**: Catchy and SEO-optimized Korean title.
+2.  **Structure**: Introduction, Key Points (Findings), Insight/Opinion, Conclusion.
+3.  **Language**: Korean (fluent, natural).
+4.  **Format**: Markdown.
+5.  **Citations**: YOU MUST include a "References" (참고 자료) section at the very bottom with markdown links to the source articles provided. 
+    Format: - [Title](Link) - Source name
+6.  **Content**: Synthesize the information. Do not just summarize. Add value by connecting dots or predicting implications.
+        `;
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o", // or "gpt-3.5-turbo" if cost is concern
             messages: [
-                { role: "system", content: "You are a helpful assistant that outputs JSON." },
-                { role: "user", content: promptText }
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `Here is the research material related to "${keyword}". Write a comprehensive blog post.\n\n${context}` }
             ],
-            model: "gpt-4o",
-            response_format: { type: "json_object" },
+            temperature: 0.7,
         });
 
-        const content = completion.choices[0].message.content;
-        const result = JSON.parse(content || "{}");
+        const content = response.choices[0].message.content;
 
-        return NextResponse.json(result);
+        return NextResponse.json({ content });
 
-    } catch (error: any) {
-        console.error("AI Generation Error:", error);
-        return NextResponse.json({ error: "Failed to generate content: " + error.message }, { status: 500 });
+    } catch (error) {
+        console.error("Error generating content:", error);
+        return NextResponse.json(
+            { error: "Failed to generate content", details: String(error) },
+            { status: 500 }
+        );
     }
 }

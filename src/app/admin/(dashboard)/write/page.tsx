@@ -86,6 +86,33 @@ function AdminWriteForm() {
         fetchPost();
     }, [editId, router]);
 
+    // Check for AI Generated Content in localStorage
+    useEffect(() => {
+        if (isEditMode) return;
+
+        const stored = localStorage.getItem('ai_generated_content');
+        if (stored) {
+            try {
+                const data = JSON.parse(stored);
+                console.log("Loading AI generated content:", data);
+
+                // Set all fields directly (no confirm, user came from wizard)
+                if (data.title) setTitle(data.title);
+                if (data.content) setContent(data.content);
+                if (data.slug) setSlug(data.slug);
+                if (data.category) setCategory(data.category);
+                if (data.tags) setTags(data.tags);
+
+                // Clear localStorage after loading
+                localStorage.removeItem('ai_generated_content');
+
+                alert("AI가 생성한 콘텐츠를 불러왔습니다. 내용을 검토하고 발행해주세요.");
+            } catch (e) {
+                console.error("Failed to parse AI content", e);
+            }
+        }
+    }, [isEditMode]);
+
 
     const handleAiGenerate = async () => {
         if (!title) {
