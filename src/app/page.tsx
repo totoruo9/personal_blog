@@ -3,7 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSlider } from "@/components/blog/HeroSlider";
 import { PostCard } from "@/components/blog/PostCard";
 import { Sidebar } from "@/components/blog/Sidebar";
-import { getPosts, getHybridPosts } from "@/lib/posts";
+import { getPosts, getHybridPosts, getHeroPosts } from "@/lib/posts";
 import { FeedSection } from "@/components/blog/FeedSection"; // Import added
 
 // Revalidate every minute
@@ -12,6 +12,7 @@ export const revalidate = 60;
 export default async function Home() {
   const posts = await getHybridPosts(); // Recent posts
   const popularPosts = await getPosts(4, 'views'); // Popular posts
+  const heroPosts = await getHeroPosts(); // Top 3 Hero posts
 
   return (
     <div className="min-h-screen bg-white font-sans text-text-primary">
@@ -27,7 +28,7 @@ export default async function Home() {
 
             {/* 1. Hero Slider */}
             <section>
-              <HeroSlider />
+              <HeroSlider posts={heroPosts} />
             </section>
 
             {/* 2. Ranking / Weekly Popular (Static Mock for Showcase) */}

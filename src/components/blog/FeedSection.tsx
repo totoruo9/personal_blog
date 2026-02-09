@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { PostCard } from "@/components/blog/PostCard";
 import { Post } from "@/lib/supabase";
 
@@ -9,47 +10,39 @@ interface FeedSectionProps {
 }
 
 export function FeedSection({ initialPosts }: FeedSectionProps) {
-    const [selectedCategory, setSelectedCategory] = useState("전체");
-
     // Derive unique categories from posts
     const categories = useMemo(() => {
         const uniqueCats = Array.from(new Set(initialPosts.map((p) => p.category).filter(Boolean) as string[]));
         return ["전체", ...uniqueCats];
     }, [initialPosts]);
 
-    // Filter posts based on selection
-    const filteredPosts = useMemo(() => {
-        if (selectedCategory === "전체") return initialPosts;
-        return initialPosts.filter((p) => p.category === selectedCategory);
-    }, [initialPosts, selectedCategory]);
-
     return (
         <section className="space-y-8">
             {/* Recent Posts Heading */}
             <h2 className="text-xl font-bold font-heading text-black mb-4">최근 올라온 글</h2>
 
-            {/* Pill Menu for Categories */}
+            {/* Pill Menu for Categories (Links) */}
             <div className="flex justify-start mb-6">
                 <div className="inline-flex items-center p-1.5 rounded-full border border-border-light bg-white shadow-sm gap-1 overflow-x-auto hide-scrollbar">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => setSelectedCategory(cat)}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm ${selectedCategory === cat
-                                ? "bg-text-primary text-white font-bold"
-                                : "text-text-secondary hover:bg-stone-100 hover:text-text-primary"
-                                }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                    {categories.map((cat) => {
+                        const href = cat === "전체" ? "/category/all" : `/category/${cat}`;
+                        return (
+                            <Link
+                                key={cat}
+                                href={href}
+                                className="px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors shadow-sm text-text-secondary hover:bg-stone-100 hover:text-text-primary"
+                            >
+                                {cat}
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
 
             {/* List Feed */}
             <div className="space-y-2">
-                {filteredPosts.length > 0 ? (
-                    filteredPosts.map((post) => (
+                {initialPosts.length > 0 ? (
+                    initialPosts.map((post) => (
                         <PostCard
                             key={post.id}
                             variant="feed-list"
@@ -67,7 +60,7 @@ export function FeedSection({ initialPosts }: FeedSectionProps) {
                     ))
                 ) : (
                     <div className="py-8 text-center text-stone-500 bg-stone-50 rounded-lg">
-                        해당 카테고리에 글이 없습니다.
+                        게시글이 없습니다.
                     </div>
                 )}
             </div>

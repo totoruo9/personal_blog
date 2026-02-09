@@ -158,3 +158,27 @@ export async function getPostsByCategory(category: string, page = 1, limit = 30)
 
     return { data: (data as Post[]) || [], count: count || 0 };
 }
+export async function getHeroPosts(): Promise<Post[]> {
+    const { data, error } = await supabase
+        .from('posts')
+        .select('*, comments(count)')
+        .order('views', { ascending: false })
+        .limit(3);
+
+    if (error) {
+        console.error("Error fetching hero posts:", error);
+        return [];
+    }
+
+    // Map and sort effectively if needed (Supabase order by views is good for now)
+    // We can also sort by (views + comments) here if we fetched more
+    let posts = (data?.map(post => ({
+        ...post,
+        comments: post.comments?.[0]?.count || 0
+    })) as Post[]) || [];
+
+    // Optional: Re-sort by (views + comments) in memory to be more accurate "popularity"
+    posts.sort((a, b) => ((b.views || 0) + (b.comments || 0)) - ((a.views || 0) + (a.comments || 0)));
+
+    return posts;
+}
